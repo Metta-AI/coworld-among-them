@@ -26,7 +26,7 @@ proc initAmongThemForTest(config: GameConfig): SimServer =
 proc loadTestAsciiSprites(): PixelFont =
   ## Loads the Among Them tiny ASCII font for text OCR tests.
   loadPalette(clientDataDir() / "pallete.png")
-  loadAsciiSprites(GameDir / "tiny5.aseprite")
+  loadAsciiSprites(GameDir / "data" / "tiny5.aseprite")
 
 proc renderText(
   asciiSprites: PixelFont,

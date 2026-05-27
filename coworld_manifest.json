@@ -214,7 +214,7 @@
         "mapPath": {
           "description": "Map JSON file path.",
           "type": "string",
-          "default": "map.json"
+          "default": "data/map.json"
         }
       }
     },

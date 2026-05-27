@@ -18,8 +18,8 @@ const
   ReplayLeaveRecord* = 0x04'u8
   ReplayChatRecord* = 0x05'u8
   ReplayFps* = 24
-  DefaultMapPath* = "map.json"
-  DarkBgPath* = "darkbg.aseprite"
+  DefaultMapPath* = "data/map.json"
+  DarkBgPath* = "data/darkbg.aseprite"
   MapWidth* = 952
   MapHeight* = 534
   SpriteSize* = 12
@@ -447,19 +447,29 @@ proc resolveMapPath*(path: string): string =
       path.strip()
   if trimmed.isAbsolute() or fileExists(trimmed):
     trimmed
+  elif fileExists(gameDir() / "data" / trimmed):
+    gameDir() / "data" / trimmed
   else:
     gameDir() / trimmed
 
 proc spriteSheetPath(): string =
   ## Returns the best available sprite sheet path.
-  if fileExists("spritesheet.aseprite"):
+  if fileExists("data/spritesheet.aseprite"):
+    "data/spritesheet.aseprite"
+  elif fileExists(gameDir() / "data" / "spritesheet.aseprite"):
+    gameDir() / "data" / "spritesheet.aseprite"
+  elif fileExists("spritesheet.aseprite"):
     "spritesheet.aseprite"
   elif fileExists(gameDir() / "spritesheet.aseprite"):
     gameDir() / "spritesheet.aseprite"
+  elif fileExists("data/spritesheet.png"):
+    "data/spritesheet.png"
+  elif fileExists(gameDir() / "data" / "spritesheet.png"):
+    gameDir() / "data" / "spritesheet.png"
   elif fileExists("spritesheet.png"):
     "spritesheet.png"
   else:
-    gameDir() / "spritesheet.png"
+    gameDir() / "data" / "spritesheet.png"
 
 proc loadSpriteSheet*(): Image =
   ## Loads the sprite sheet from aseprite when available.
@@ -3957,7 +3967,7 @@ proc initSimServer*(config: GameConfig): SimServer =
   result.rng = initRand(config.seed)
   result.fb = initFramebuffer()
   loadPalette(clientDataDir() / "pallete.png")
-  result.asciiSprites = loadAsciiSprites(gameDir() / "tiny5.aseprite")
+  result.asciiSprites = loadAsciiSprites(gameDir() / "data" / "tiny5.aseprite")
 
   let sheet = loadSpriteSheet()
   result.playerSprite = spriteFromImage(

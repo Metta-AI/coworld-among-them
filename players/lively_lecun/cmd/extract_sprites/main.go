@@ -24,7 +24,7 @@ import (
 )
 
 const (
-	paletteRelPath = "../../../client/data/pallete.png"
+	paletteRelPath = "../../data/pallete.png"
 	// spritesheet.png in the repo is stale -- tile 7 (ghost icon) was
 	// only added to spritesheet.aseprite. Re-render first with:
 	//

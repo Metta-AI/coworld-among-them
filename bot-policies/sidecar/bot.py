@@ -415,6 +415,7 @@ def _find_palette_path() -> Optional[Path]:
   gd = _game_dir()
   candidates = [
     gd.parent / 'client' / 'data' / 'pallete.png',
+    gd / 'data' / 'pallete.png',
     gd / 'pallete.png',
   ]
   for c in candidates:
@@ -425,6 +426,7 @@ def _find_palette_path() -> Optional[Path]:
 def _find_spritesheet_path() -> Optional[Path]:
   gd = _game_dir()
   candidates = [
+    gd / 'data' / 'spritesheet.png',
     gd / 'spritesheet.png',
     gd.parent / 'client' / 'dist' / 'atlas.png',
   ]
@@ -436,6 +438,7 @@ def _find_spritesheet_path() -> Optional[Path]:
 def _find_skeld2_path() -> Optional[Path]:
   gd = _game_dir()
   candidates = [
+    gd / 'data' / 'skeld2.aseprite',
     gd / 'skeld2.aseprite',
   ]
   for c in candidates:

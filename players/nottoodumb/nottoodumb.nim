@@ -304,7 +304,7 @@ proc gameDir(): string =
     cwd = getCurrentDir()
     candidates = [sourceDir, cwd, cwd.parentDir(), cwd.parentDir().parentDir()]
   for candidate in candidates:
-    if fileExists(candidate / "map.json"):
+    if fileExists(candidate / "data" / "map.json"):
       return candidate
   sourceDir
 

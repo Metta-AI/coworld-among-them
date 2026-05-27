@@ -51,8 +51,6 @@ RUN apt-get update && \
 WORKDIR /workspace/among_them
 COPY --from=build /workspace/among_them/among_them /bin/among_them
 COPY --from=build /workspace/among_them/*.json ./
-COPY --from=build /workspace/among_them/*.aseprite ./
-COPY --from=build /workspace/among_them/*.png ./
 COPY --from=build /workspace/among_them/data ./data
 
 CMD ["/bin/among_them"]
