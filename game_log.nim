@@ -3,11 +3,9 @@
 ## When `COGAME_LOG_URI` is set the game emits one JSON line per simulation
 ## tick that captures the game phase plus per-agent state (location, alive
 ## flag, imposter kill cooldown, and assigned tasks). The sink supports
-## either an `http(s)://` URL (POST batches of newline-separated lines) or a
-## plain or `file://` path (append). When `COGAME_LOG_URI` is unset, lines
-## are written to stdout (one line per write, flushed immediately) — this is
-## the local-dev fallback so the operator sees logs without having to wire
-## up a URI.
+## either an `http(s)://` URL (POST batches of newline-separated lines), a
+## plain or `file://` path (append), or `stdout` for local debugging. When
+## `COGAME_LOG_URI` is unset, the dense tick log is disabled.
 
 import std/[json, os, strutils]
 import curly
@@ -53,14 +51,15 @@ proc disabledGameLogSink*(): GameLogSink =
   GameLogSink(kind: glsDisabled)
 
 proc openGameLogSink*(rawUri: string): GameLogSink =
-  ## Opens a log sink. An empty URI falls back to stdout so local dev runs
-  ## without `COGAME_LOG_URI` still get visible per-tick output.
+  ## Opens a log sink. An empty URI disables dense per-tick logging.
+  if rawUri.len == 0:
+    return disabledGameLogSink()
   result = GameLogSink(
     kind: glsStdout,
     flushBytes: DefaultFlushBytes,
     flushLines: DefaultFlushLines
   )
-  if rawUri.len == 0:
+  if rawUri == "-" or rawUri.toLowerAscii() == "stdout":
     return
   if isHttpUri(rawUri):
     result.kind = glsHttp

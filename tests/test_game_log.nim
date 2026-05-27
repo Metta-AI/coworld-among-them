@@ -145,8 +145,16 @@ suite "game log":
     check parseJson(lines[1])["t"].getInt() == 2
     removeFile(tmpPath)
 
-  test "empty uri falls back to stdout":
+  test "empty uri disables dense tick logs":
     let sink = openGameLogSink("")
+    check not sink.enabled
+    check sink.kind == glsDisabled
+    sink.flushGameLogSink()
+    sink.closeGameLogSink()
+    check sink.kind == glsDisabled
+
+  test "stdout uri enables local tick logs":
+    let sink = openGameLogSink("stdout")
     check sink.enabled
     check sink.kind == glsStdout
     sink.flushGameLogSink()
