@@ -1,6 +1,6 @@
 import
   std/[algorithm, locks, monotimes, nativesockets, os, strutils, tables, times],
-  curly, mummy,
+  mummy,
   bitworld/client as bitworldClient, bitworld/runtime, bitworld/protocol,
   sim, global, profile, replays, game_log
 
@@ -20,7 +20,6 @@ type
     lock: Lock
     replayServerMode: bool
     replayLoaded: bool
-    pendingReplayUri: string
     resetRequested: bool
     kickRequests: seq[string]
     kickedIdentities: Table[string, bool]
@@ -98,30 +97,6 @@ proc serveStaticClientHtml(request: Request): bool =
   ## Serves one static client asset if the route matches.
   request.serveClientHtml(request.path)
 
-proc replayFilePath(uri: string): string =
-  ## Resolves one local replay URI to a host path.
-  const FilePrefix = "file://"
-  if uri.startsWith(FilePrefix):
-    return uri[FilePrefix.len .. ^1]
-  if "://" in uri:
-    return ""
-  uri
-
-let replayDownloadPool = newCurlPool(1)
-
-proc loadReplayUri(uri: string): ReplayData =
-  ## Loads a replay from a local file URI or HTTP(S) URL.
-  parseReplayBytes(readCogameUri(uri, CogameLoadReplayUriEnv))
-
-proc readableReplayUri(uri: string): bool =
-  ## Returns true when a replay URI can be opened by this server.
-  if uri.len == 0:
-    return false
-  if uri.startsWith("http://") or uri.startsWith("https://"):
-    return replayDownloadPool.head(uri).code == 200
-  let path = replayFilePath(uri)
-  path.len > 0 and fileExists(path)
-
 proc rewardAddress(address: string): string =
   ## Formats one reward address as host:port.
   let parts = address.splitWhitespace()
@@ -157,7 +132,6 @@ proc initAppState() =
   initLock(appState.lock)
   appState.replayServerMode = false
   appState.replayLoaded = false
-  appState.pendingReplayUri = ""
   appState.resetRequested = false
   appState.kickRequests = @[]
   appState.kickedIdentities = initTable[string, bool]()
@@ -388,22 +362,6 @@ proc configuredPlayerJoinError(
     return "Player token does not match configured slot " & $slot & "."
   "Player credentials do not match configured roster."
 
-proc replayRequestUri(request: Request): string =
-  ## Returns the replay artifact URI requested by a Coworld replay client.
-  request.queryParams.getOrDefault("uri", "").strip()
-
-proc replayRequestUriOrPending(request: Request): tuple[uri: string, loaded: bool] =
-  ## Returns the websocket URI, falling back to the URI captured when serving
-  ## /client/replay. Kubernetes service-proxy websocket upgrades do not
-  ## preserve query params, so the preceding client HTML request is the durable
-  ## place to capture the artifact URI.
-  result.uri = request.replayRequestUri()
-  {.gcsafe.}:
-    withLock appState.lock:
-      result.loaded = appState.replayLoaded
-      if result.uri.len == 0:
-        result.uri = appState.pendingReplayUri
-
 proc httpHandler(request: Request) =
   if request.path == HealthPath and request.httpMethod == "GET":
     var headers: HttpHeaders
@@ -461,25 +419,13 @@ proc httpHandler(request: Request) =
         appState.globalViewers[websocket] = initGlobalViewerState()
   elif request.path == ReplayWebSocketPath and request.httpMethod == "GET" and
       request.isWebSocketUpgrade():
-    let replayServerMode = replayServerModeEnabled()
-    let replayRequest =
-      if replayServerMode:
-        request.replayRequestUriOrPending()
-      else:
-        (uri: "", loaded: false)
-    if replayServerMode:
-      if replayRequest.uri.len == 0 and not replayRequest.loaded:
-        request.respondReplayRequestError(400, "missing replay uri\n")
-        return
-      if replayRequest.uri.len > 0 and not replayRequest.uri.readableReplayUri():
-        request.respondReplayRequestError(404, "replay uri is not readable\n")
-        return
+    if replayServerModeEnabled() and not replayControlsDisabled():
+      request.respondReplayRequestError(400, "replay is not loaded\n")
+      return
     let websocket = request.upgradeToWebSocket()
     {.gcsafe.}:
       withLock appState.lock:
         appState.globalViewers[websocket] = initGlobalViewerState()
-        if replayServerMode and replayRequest.uri.len > 0:
-          appState.pendingReplayUri = replayRequest.uri
   elif request.path == AdminWebSocketPath and request.httpMethod == "GET" and
       request.isWebSocketUpgrade():
     let websocket = request.upgradeToWebSocket()
@@ -519,17 +465,6 @@ proc httpHandler(request: Request) =
             appState.kickRequests.add(identity)
         request.respondControl(202, "kick queued\n")
   elif request.path == CoworldReplayClientRoute and request.httpMethod == "GET":
-    if replayServerModeEnabled():
-      let uri = request.replayRequestUri()
-      if uri.len == 0:
-        request.respondReplayRequestError(400, "missing replay uri\n")
-        return
-      if not uri.readableReplayUri():
-        request.respondReplayRequestError(404, "replay uri is not readable\n")
-        return
-      {.gcsafe.}:
-        withLock appState.lock:
-          appState.pendingReplayUri = uri
     discard request.serveStaticClientHtml()
   elif request.serveStaticClientHtml():
     discard
@@ -755,7 +690,6 @@ proc runServerLoop*(
 
   while true:
     var
-      pendingReplayUri = ""
       sockets: seq[WebSocket] = @[]
       socketsToClose: seq[WebSocket] = @[]
       playerIndices: seq[int] = @[]
@@ -771,23 +705,6 @@ proc runServerLoop*(
       replaySeekTicks: seq[int] = @[]
       shouldReset = false
       quitAfterFrame = false
-
-    {.gcsafe.}:
-      withLock appState.lock:
-        pendingReplayUri = appState.pendingReplayUri
-        appState.pendingReplayUri = ""
-    if pendingReplayUri.len > 0:
-      replayData = loadReplayUri(pendingReplayUri)
-      var replayConfig = defaultGameConfig()
-      replayConfig.update(replayData.configJson)
-      config = replayConfig
-      sim = initSimServer(config)
-      replayPlayer = initReplayPlayer(replayData)
-      replayLoaded = true
-      {.gcsafe.}:
-        withLock appState.lock:
-          appState.replayLoaded = true
-          appState.config = config
 
     {.gcsafe.}:
       withLock appState.lock:
