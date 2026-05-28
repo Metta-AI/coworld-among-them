@@ -15,6 +15,7 @@
 # Normal ignores.
 *.exe
 nimcache
+nim.cfg
 *.pdb
 *.ilk
 *.out
