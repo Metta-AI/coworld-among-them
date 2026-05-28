@@ -1,4 +1,5 @@
 import std/times
+import zippy
 import bitworld/protocol, sim
 
 type
@@ -152,6 +153,28 @@ proc readReplayString(bytes: string, offset: var int): string =
   result = bytes[offset ..< offset + length]
   offset += length
 
+proc isCompressedReplayBytes(bytes: string): bool =
+  ## Returns true when bytes look like gzip or zlib compressed data.
+  if bytes.len > 18:
+    let
+      b0 = bytes[0].uint8
+      b1 = bytes[1].uint8
+      b2 = bytes[2].uint8
+      b3 = bytes[3].uint8
+    if b0 == 31'u8 and b1 == 139'u8 and b2 == 8'u8 and
+        (b3 and 224'u8) == 0'u8:
+      return true
+
+  if bytes.len > 6:
+    let
+      b0 = bytes[0].uint8
+      b1 = bytes[1].uint8
+    if (b0 and 15'u8) == 8'u8 and (b0 shr 4) <= 7'u8 and
+        ((uint16(b0) * 256'u16 + uint16(b1)) mod 31'u16) == 0'u16:
+      return true
+
+  false
+
 proc openReplayWriter*(path: string, configJson: string): ReplayWriter =
   ## Opens a replay file and writes the header.
   if path.len == 0:
@@ -234,19 +257,24 @@ proc writeHash*(writer: var ReplayWriter, tick: uint32, hash: uint64) =
 
 proc parseReplayBytes*(bytes: string): ReplayData =
   ## Parses one replay file buffer into memory.
+  let replayBytes =
+    if bytes.isCompressedReplayBytes():
+      uncompress(bytes)
+    else:
+      bytes
   var offset = 0
-  if bytes.len < ReplayMagic.len:
+  if replayBytes.len < ReplayMagic.len:
     raise newException(ReplayError, "Replay file is truncated")
-  if bytes[0 ..< ReplayMagic.len] != ReplayMagic:
+  if replayBytes[0 ..< ReplayMagic.len] != ReplayMagic:
     raise newException(ReplayError, "Replay magic is not BITWORLD")
   offset = ReplayMagic.len
-  let formatVersion = bytes.readU16(offset)
+  let formatVersion = replayBytes.readU16(offset)
   if formatVersion != ReplayFormatVersion:
     raise newException(ReplayError, "Unsupported replay format version")
-  result.gameName = bytes.readReplayString(offset)
-  result.gameVersion = bytes.readReplayString(offset)
-  discard bytes.readU64(offset)
-  result.configJson = bytes.readReplayString(offset)
+  result.gameName = replayBytes.readReplayString(offset)
+  result.gameVersion = replayBytes.readReplayString(offset)
+  discard replayBytes.readU64(offset)
+  result.configJson = replayBytes.readReplayString(offset)
   if result.gameName != GameName:
     raise newException(ReplayError, "Replay game name does not match")
   if result.gameVersion != GameVersion:
@@ -258,22 +286,22 @@ proc parseReplayBytes*(bytes: string): ReplayData =
     lastJoinTime = 0'u32
     lastLeaveTime = 0'u32
     lastChatTime = 0'u32
-  while offset < bytes.len:
-    let recordType = bytes.readU8(offset)
+  while offset < replayBytes.len:
+    let recordType = replayBytes.readU8(offset)
     case recordType
     of ReplayTickHashRecord:
       let
-        tick = bytes.readU32(offset)
-        hash = bytes.readU64(offset)
+        tick = replayBytes.readU32(offset)
+        hash = replayBytes.readU64(offset)
       if int(tick) <= lastTick:
         break
       lastTick = int(tick)
       result.hashes.add(ReplayHash(tick: tick, hash: hash))
     of ReplayInputRecord:
       let input = ReplayInput(
-        time: bytes.readU32(offset),
-        player: bytes.readU8(offset),
-        keys: bytes.readU8(offset)
+        time: replayBytes.readU32(offset),
+        player: replayBytes.readU8(offset),
+        keys: replayBytes.readU8(offset)
       )
       if input.time < lastInputTime:
         raise newException(ReplayError, "Replay input timestamps move backward")
@@ -281,11 +309,11 @@ proc parseReplayBytes*(bytes: string): ReplayData =
       result.inputs.add(input)
     of ReplayJoinRecord:
       let join = ReplayJoin(
-        time: bytes.readU32(offset),
-        player: bytes.readU8(offset),
-        name: bytes.readReplayString(offset),
-        slot: bytes.readI16(offset),
-        token: bytes.readReplayString(offset)
+        time: replayBytes.readU32(offset),
+        player: replayBytes.readU8(offset),
+        name: replayBytes.readReplayString(offset),
+        slot: replayBytes.readI16(offset),
+        token: replayBytes.readReplayString(offset)
       )
       if join.time < lastJoinTime:
         raise newException(ReplayError, "Replay join timestamps move backward")
@@ -293,8 +321,8 @@ proc parseReplayBytes*(bytes: string): ReplayData =
       result.joins.add(join)
     of ReplayLeaveRecord:
       let leave = ReplayLeave(
-        time: bytes.readU32(offset),
-        player: bytes.readU8(offset)
+        time: replayBytes.readU32(offset),
+        player: replayBytes.readU8(offset)
       )
       if leave.time < lastLeaveTime:
         raise newException(ReplayError, "Replay leave timestamps move backward")
@@ -302,9 +330,9 @@ proc parseReplayBytes*(bytes: string): ReplayData =
       result.leaves.add(leave)
     of ReplayChatRecord:
       let chat = ReplayChat(
-        time: bytes.readU32(offset),
-        player: bytes.readU8(offset),
-        message: bytes.readReplayString(offset)
+        time: replayBytes.readU32(offset),
+        player: replayBytes.readU8(offset),
+        message: replayBytes.readReplayString(offset)
       )
       if chat.time < lastChatTime:
         raise newException(ReplayError, "Replay chat timestamps move backward")
