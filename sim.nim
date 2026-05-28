@@ -411,17 +411,11 @@ var
 
 proc gameDir*(): string =
   ## Returns the Among Them game directory.
-  when defined(emscripten):
-    "among_them"
-  else:
-    getCurrentDir()
+  getCurrentDir()
 
 proc clientDataDir*(): string =
   ## Returns the shared client data directory.
-  when defined(emscripten):
-    "client" / "data"
-  else:
-    bitworldClient.clientDir() / "data"
+  bitworldClient.clientDir() / "data"
 
 proc resolveGamePath*(path: string, baseDir = ""): string =
   ## Resolves a game data path against the map file and game directory.

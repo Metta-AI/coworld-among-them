@@ -13,7 +13,6 @@ METTA_REPO="${METTA_REPO:-${DEFAULT_METTA_REPO}}"
 COWORLD_SERVER="${COWORLD_SERVER:-https://softmax.com/api}"
 REGISTRY="${REGISTRY:-ghcr.io/metta-ai}"
 CERTIFY_TIMEOUT="${CERTIFY_TIMEOUT:-180}"
-S3_VIEWER_URI="${S3_VIEWER_URI:-s3://softmax-public/bitworld/among_them/1}"
 COWORLD_COMPOSE="${COWORLD_COMPOSE:-${METTA_REPO}/worlds/among_them/compose.yaml}"
 COWORLD_TEMPLATE="${COWORLD_TEMPLATE:-${METTA_REPO}/worlds/among_them/coworld_manifest_template.json}"
 
@@ -22,7 +21,6 @@ RUN_GIT_PULL=1
 ALLOW_DIRTY=0
 SKIP_GHCR=0
 SKIP_COWORLD=0
-SKIP_REPLAY_VIEWER=0
 
 usage() {
   cat <<'EOF'
@@ -35,14 +33,12 @@ Steps:
   1. git pull --ff-only and require a clean master checkout.
   2. Build and push GHCR images for the game runner and ivotewell baseline.
   3. Build and upload the Coworld through Metta's canonical coworld build.
-  4. Rebuild and upload the hosted replay viewer bundle to S3.
 
 Options:
   --allow-dirty          Build from a dirty checkout.
   --no-pull              Do not git pull before building.
   --skip-ghcr            Do not push GHCR images.
   --skip-coworld         Skip Coworld certify/upload.
-  --skip-replay-viewer   Skip replay viewer build/upload.
   -h, --help             Show this help.
 
 Environment:
@@ -50,7 +46,6 @@ Environment:
   COWORLD_SERVER         Observatory API URL.
   REGISTRY               GHCR registry prefix, default ghcr.io/metta-ai.
   CERTIFY_TIMEOUT        Coworld certifier timeout seconds.
-  S3_VIEWER_URI          S3 prefix for replay_viewer.{html,js,wasm,data}.
   COWORLD_COMPOSE        Metta Coworld compose.yaml path.
   COWORLD_TEMPLATE       Metta Coworld manifest template path.
   GHCR_USERNAME          Optional GHCR username.
@@ -100,10 +95,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     --skip-coworld)
       SKIP_COWORLD=1
-      shift
-      ;;
-    --skip-replay-viewer)
-      SKIP_REPLAY_VIEWER=1
       shift
       ;;
     -*)
@@ -266,52 +257,8 @@ upload_coworld() {
   fi
 }
 
-upload_replay_viewer() {
-  if [[ "${SKIP_REPLAY_VIEWER}" -eq 1 ]]; then
-    log "Skipping replay viewer upload"
-    return
-  fi
-
-  log "Building replay viewer wasm bundle"
-  (cd "${REPO_ROOT}" && run nim c -d:emscripten -d:release among_them/replay_viewer.nim)
-
-  local bundle_dir="${REPO_ROOT}/among_them/emscripten"
-  local backup_uri="${S3_VIEWER_URI%/}/backups/$(date -u +%Y%m%dT%H%M%SZ)"
-
-  log "Backing up current hosted replay viewer bundle"
-  for file in replay_viewer.html replay_viewer.js replay_viewer.wasm replay_viewer.data; do
-    if aws s3 ls "${S3_VIEWER_URI%/}/${file}" >/dev/null 2>&1; then
-      run aws s3 cp "${S3_VIEWER_URI%/}/${file}" "${backup_uri}/${file}"
-    fi
-  done
-
-  log "Uploading replay viewer bundle"
-  run aws s3 cp "${bundle_dir}/replay_viewer.html" "${S3_VIEWER_URI%/}/replay_viewer.html" \
-    --content-type text/html \
-    --cache-control no-cache
-  run aws s3 cp "${bundle_dir}/replay_viewer.js" "${S3_VIEWER_URI%/}/replay_viewer.js" \
-    --content-type application/javascript \
-    --cache-control no-cache
-  run aws s3 cp "${bundle_dir}/replay_viewer.wasm" "${S3_VIEWER_URI%/}/replay_viewer.wasm" \
-    --content-type application/wasm \
-    --cache-control no-cache
-  run aws s3 cp "${bundle_dir}/replay_viewer.data" "${S3_VIEWER_URI%/}/replay_viewer.data" \
-    --content-type application/octet-stream \
-    --cache-control no-cache
-
-  log "Verifying replay viewer objects"
-  for file in replay_viewer.html replay_viewer.js replay_viewer.wasm replay_viewer.data; do
-    run aws s3api head-object \
-      --bucket softmax-public \
-      --key "bitworld/among_them/1/${file}" \
-      --query '{ContentType:ContentType,CacheControl:CacheControl,ContentLength:ContentLength}' \
-      --output json
-  done
-}
-
 require_master_checkout
 build_and_push_ghcr_images
 upload_coworld
-upload_replay_viewer
 
 log "Among Them ${VERSION} upload flow complete"

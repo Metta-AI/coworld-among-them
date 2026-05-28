@@ -8,9 +8,9 @@ symbolic view.
 ## 1. High-level architecture
 
 The server (`among_them/sim.nim`) owns the authoritative world state and renders
-each agent's personal 128×128 view server-side every tick. The client
-(`client/player_client.nim`) only decodes and displays a ready-made
-framebuffer — it does no game logic. The frame crosses the wire as a **4bpp
+each agent's personal 128×128 view server-side every tick. The shared BitWorld
+client only decodes and displays a ready-made framebuffer — it does no game
+logic. The frame crosses the wire as a **4bpp
 packed byte array** (8192 bytes = 128·128/2), so every pixel parser starts by
 unpacking two 4-bit palette indices per byte.
 
@@ -196,13 +196,9 @@ All of these use the same tiny5 font on palette-2 white over black
 
 ### 5.3 Other image-font files
 
-- `among_them/ascii.png` and `client/data/ascii.png` (126×54) are a
-  **separate** chat ASCII sprite sheet used only by the *native* desktop
-  client for typing into the chat input box (7×9 cells, `ChatGlyphW=7,
-  ChatGlyphH=9, ChatRowStride=9` — `client/player_client.nim:56-62`). It is
-  drawn *on top of* the 128×128 framebuffer, **not inside it**, so a pixel
-  parser that consumes only the server-sent 8192-byte frame never sees these
-  glyphs.
+- `among_them/ascii.png` is a legacy chat ASCII sprite sheet. The current
+  browser client comes from BitWorld, so a pixel parser that consumes only the
+  server-sent 8192-byte frame never sees these glyphs.
 - `among_them/vanta9.*` and `among_them/skeld.aseprite` are legacy assets
   (not loaded by the current code path).
 
@@ -461,7 +457,7 @@ font data in `among_them/tiny5.aseprite`, and all palette data in
 | Tiny font OCR helpers                        | `common/pixelfonts.nim`                              |
 | All sim rendering (authoritative)            | `among_them/sim.nim:1659-2815`                       |
 | Map JSON schema & loader                     | `among_them/sim.nim:494-688`, `among_them/map.json`  |
-| Client that displays frames                  | `client/player_client.nim`                          |
+| Client that displays frames                  | BitWorld shared browser client                      |
 | Reference pixel parser                       | `among_them/players/nottoodumb.nim` (sprite match, camera lock via patch voting, radar parsing, vote-screen reader) |
 | Map-scan benchmark for camera localization   | `among_them/bench_scan.nim`                          |
 

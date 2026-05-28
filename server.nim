@@ -67,36 +67,6 @@ proc isWebSocketUpgrade(request: Request): bool =
   ## Returns true when the GET request is a websocket upgrade.
   request.headers["Sec-WebSocket-Key"].len > 0
 
-proc clientStaticBody(route: string): string =
-  ## Returns the embedded BitWorld client body for one route.
-  case bitworldClient.clientRoute(route)
-  of bitworldClient.PlayerClientRoute,
-      bitworldClient.GlobalClientRoute,
-      bitworldClient.AdminClientRoute,
-      bitworldClient.RewardClientRoute:
-    bitworldClient.EmbeddedGlobalClientHtml
-  of bitworldClient.SnappyClientRoute:
-    bitworldClient.EmbeddedSnappyClientJs
-  else:
-    ""
-
-proc serveClientHtml(request: Request, route: string): bool =
-  ## Serves one static client file for a known client route.
-  if request.httpMethod != "GET":
-    return false
-  let body = clientStaticBody(route)
-  if body.len == 0:
-    return false
-  var headers: HttpHeaders
-  headers["Content-Type"] = bitworldClient.clientStaticContentType(route)
-  headers["Cache-Control"] = "no-cache"
-  request.respond(200, headers, body)
-  true
-
-proc serveStaticClientHtml(request: Request): bool =
-  ## Serves one static client asset if the route matches.
-  request.serveClientHtml(request.path)
-
 proc rewardAddress(address: string): string =
   ## Formats one reward address as host:port.
   let parts = address.splitWhitespace()
@@ -464,9 +434,10 @@ proc httpHandler(request: Request) =
           withLock appState.lock:
             appState.kickRequests.add(identity)
         request.respondControl(202, "kick queued\n")
-  elif request.path == CoworldReplayClientRoute and request.httpMethod == "GET":
-    discard request.serveStaticClientHtml()
-  elif request.serveStaticClientHtml():
+  elif bitworldClient.serveClientRoute(
+    request,
+    bitworldClient.GlobalClientRoute
+  ):
     discard
   else:
     var headers: HttpHeaders
