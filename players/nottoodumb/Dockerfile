@@ -19,31 +19,25 @@ https://github.com/treeform/nimby/releases/download/0.1.26/nimby-Linux-ARM64; \
 
 ENV PATH="/root/.nimby/nim/bin:$PATH"
 
-WORKDIR /workspace/bitworld
+WORKDIR /workspace/among_them
 COPY nimby.lock .
-RUN nimby --global sync nimby.lock && \
-  cat nim.cfg >> /root/.nimby/nim/config/nim.cfg
+RUN nimby --global sync nimby.lock
 
 COPY . .
-WORKDIR /workspace/bitworld/among_them/players/nottoodumb
 RUN nim c \
   -d:release \
   -d:botHeadless \
   --nimcache:/tmp/bitworld-nimcache \
-  --out:nottoodumb \
-  nottoodumb.nim
+  --out:/tmp/nottoodumb \
+  players/nottoodumb/nottoodumb.nim
 
 # Run Docker.
 FROM alpine
 
-WORKDIR /workspace/bitworld
+WORKDIR /workspace/among_them
 COPY --from=build \
-  /workspace/bitworld/among_them/players/nottoodumb/nottoodumb \
+  /tmp/nottoodumb \
   /bin/nottoodumb
-COPY --from=build /workspace/bitworld/among_them/*.json ./among_them/
-COPY --from=build /workspace/bitworld/among_them/*.aseprite ./among_them/
-COPY --from=build /workspace/bitworld/among_them/*.png ./among_them/
-COPY --from=build /workspace/bitworld/client/data ./client/data
+COPY --from=build /workspace/among_them/data ./data
 
-WORKDIR /workspace/bitworld/among_them/players
-CMD ["/bin/nottoodumb", "--address:host.docker.internal", "--port:8080"]
+CMD ["/bin/nottoodumb"]
