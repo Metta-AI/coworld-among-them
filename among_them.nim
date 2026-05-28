@@ -1,12 +1,12 @@
 import
   std/[os, parseopt, strutils],
   bitworld/runtime,
-  bitworld/protocol, sim, server
+  sim, server
 
 when isMainModule:
   var
-    address = cogameHost(DefaultHost)
-    port = cogamePort(DefaultPort)
+    address = cogameHost()
+    port = cogamePort()
     configJson = ""
     configPath = pathFromCogameEnv(CogameConfigUriEnv)
     mapPath = ""
