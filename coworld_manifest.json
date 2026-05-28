@@ -512,7 +512,7 @@
       "type": "commissioner",
       "description": "Among Them tournament commissioner implemented in Observatory and mirrored in Metta-AI/commissioners. It schedules episodes, computes rankings, moves players between divisions, and handles initial placement.",
       "source_url": "https://github.com/Metta-AI/commissioners/tree/main/commissioners/among_them/among_them_commissioner",
-      "image": "public.ecr.aws/s3j4p9s7/treeform/commissioners/among-them-commissioner:latest"
+      "image": "ghcr.io/metta-ai/among-them-commissioner:latest"
     }
   ],
   "reporter": [
@@ -522,7 +522,7 @@
       "type": "reporter",
       "description": "Reference Among Them reporter owned by James Boggs. It consumes replay/results artifacts and writes a zip with Markdown, HTML, and JSON for surfaces such as The Column.",
       "source_url": "https://github.com/Metta-AI/reporters/tree/main/reporters/among_them/among_them_summarizer",
-      "image": "public.ecr.aws/s3j4p9s7/treeform/reporters/among-them-summarizer:latest"
+      "image": "ghcr.io/metta-ai/among-them-summarizer:latest"
     }
   ],
   "grader": [
@@ -532,7 +532,7 @@
       "type": "grader",
       "description": "Reference Among Them grader owned by Kyle. It consumes replay/results artifacts and emits a scalar creator-interest score for ranking useful episodes.",
       "source_url": "https://github.com/Metta-AI/graders/tree/main/graders/among_them/among_them_grader",
-      "image": "public.ecr.aws/s3j4p9s7/treeform/graders/among-them-grader:latest"
+      "image": "ghcr.io/metta-ai/among-them-grader:latest"
     }
   ],
   "diagnoser": [
@@ -542,7 +542,7 @@
       "type": "diagnoser",
       "description": "Reference Among Them diagnoser owned by Aaron Landy. It consumes a target policy plus episode artifacts and emits policy-assay advice for the coding agent improving that policy.",
       "source_url": "https://github.com/Metta-AI/diagnosers/tree/main/diagnosers/among_them/among_them_diagnoser",
-      "image": "public.ecr.aws/s3j4p9s7/treeform/diagnosers/among-them-diagnoser:latest"
+      "image": "ghcr.io/metta-ai/among-them-diagnoser:latest"
     }
   ],
   "optimizer": [
@@ -552,7 +552,7 @@
       "type": "optimizer",
       "description": "Game-agnostic optimizer owned by Aaron Landy. It consumes the Coworld manifest, many replay/results artifacts, reporter outputs, grader scores, and diagnoser outputs to drive local policy improvement.",
       "source_url": "https://github.com/Metta-AI/optimizers",
-      "image": "public.ecr.aws/s3j4p9s7/treeform/optimizers/coworld-optimizer:latest"
+      "image": "ghcr.io/metta-ai/coworld-optimizer:latest"
     }
   ],
   "variants": [
