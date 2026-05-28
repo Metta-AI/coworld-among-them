@@ -169,12 +169,12 @@ the certifier:
 docker build \
   --platform=linux/amd64 \
   -f Dockerfile \
-  -t ghcr.io/treeform/bitworld-among-them-runner:latest \
+  -t public.ecr.aws/s3j4p9s7/treeform/games/among-them:latest \
   .
 docker build \
   --platform=linux/amd64 \
   -f players/nottoodumb/Dockerfile \
-  -t ghcr.io/treeform/bitworld-nottoodumb:latest \
+  -t public.ecr.aws/s3j4p9s7/treeform/players/nottoodumb:latest \
   .
 coworld certify coworld_manifest.json
 ```
