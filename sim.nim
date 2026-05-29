@@ -11,13 +11,6 @@ import
 const
   GameName* = "among_them"
   GameVersion* = "2"
-  ReplayMagic* = "BITWORLD"
-  ReplayFormatVersion* = 4'u16
-  ReplayTickHashRecord* = 0x01'u8
-  ReplayInputRecord* = 0x02'u8
-  ReplayJoinRecord* = 0x03'u8
-  ReplayLeaveRecord* = 0x04'u8
-  ReplayChatRecord* = 0x05'u8
   ReplayFps* = 24
   DefaultMapPath* = "data/map.json"
   DarkBgPath* = "data/darkbg.aseprite"
