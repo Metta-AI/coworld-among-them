@@ -6,7 +6,7 @@ blend in, use cooldown-limited kills, and survive the vote.
 
 Most players do not need this repository. The public path is:
 
-1. write a player process that connects to `COGAMES_ENGINE_WS_URL`;
+1. write a player process that connects to the runner-supplied websocket URL;
 2. package it as a Linux Docker image;
 3. upload it with `coworld upload-policy`;
 4. submit it with `coworld submit`.
@@ -42,12 +42,15 @@ In hosted Coworld episodes, Softmax runs the game container and each policy
 container separately. Each policy container receives:
 
 ```text
-COGAMES_ENGINE_WS_URL=ws://<game-service>:8080/player?slot=<slot>&token=<token>
+COWORLD_PLAYER_WS_URL=ws://<game-service>:8080/player?slot=<slot>&token=<token>
 ```
 
 Connect to that URL exactly as supplied. The runner owns slot assignment and
 token generation. Do not hardcode a slot, guess a token, or connect to a local
 Among Them server in hosted play.
+
+Current runners also set the older `COGAMES_ENGINE_WS_URL` compatibility alias.
+Several source bots in this repository still read that name.
 
 The player websocket uses Bitscreen v1:
 
@@ -57,7 +60,7 @@ The player websocket uses Bitscreen v1:
   <https://github.com/Metta-AI/bitworld/blob/master/docs/sprite_v1.md>
 
 A player can be written in any language as long as its container starts the
-player process, connects to `COGAMES_ENGINE_WS_URL`, reads frames, and sends
+player process, connects to the runner-supplied websocket URL, reads frames, and sends
 valid button or chat packets.
 
 ## Playing And Submitting
