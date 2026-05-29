@@ -3,6 +3,24 @@ import
   bitworld/runtime,
   sim, server
 
+proc limitText(value: int): string =
+  ## Returns a readable text value for a numeric limit.
+  if value > 0:
+    $value
+  else:
+    "infinite"
+
+proc echoStartupConfig(config: GameConfig, address: string, port: int) =
+  ## Prints the effective startup config without token secrets.
+  echo "Among Them config: host=", address,
+    " port=", port,
+    " seed=", config.seed,
+    " minPlayers=", config.minPlayers,
+    " slots=", config.slots.len,
+    " maxTicks=", config.maxTicks.limitText(),
+    " maxGames=", config.maxGames.limitText(),
+    " map=", config.mapPath
+
 when isMainModule:
   var
     address = cogameHost()
@@ -52,6 +70,7 @@ when isMainModule:
   if messageCooldown >= 0:
     config.messageCooldownTicks = messageCooldown
   replayServerMode = loadReplayPath.len > 0
+  config.echoStartupConfig(address, port)
   echo "Using map file: " & config.mapPath
   if configPath.len > 0:
     echo "Using config file: " & configPath
