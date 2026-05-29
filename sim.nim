@@ -3,7 +3,8 @@ import
   jsony, pixie,
   bitworld/aseprite,
   bitworld/client as bitworldClient,
-  bitworld/protocol, profile,
+  bitworld/profile,
+  bitworld/protocol,
   bitworld/pixelfonts,
   bitworld/server
 
