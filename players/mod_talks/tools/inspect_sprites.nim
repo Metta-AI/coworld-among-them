@@ -3,7 +3,7 @@
 import std/[os, strutils, strformat]
 import pixie
 
-import bitworld/protocol
+import bitworld/bitstreamprotocol
 import ../../../sim
 import bitworld/server
 import bitworld/aseprite

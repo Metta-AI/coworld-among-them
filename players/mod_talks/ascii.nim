@@ -25,7 +25,7 @@
 ## `parseVotingScreen` never matched and no meeting events fired.
 
 import std/strutils
-import bitworld/protocol
+import bitworld/bitstreamprotocol
 import ../../sim
 import bitworld/server
 import bitworld/pixelfonts

@@ -4,7 +4,7 @@ import
   bitworld/aseprite,
   bitworld/client as bitworldClient,
   bitworld/profile,
-  bitworld/protocol,
+  bitworld/bitstreamprotocol,
   bitworld/pixelfonts,
   bitworld/server
 

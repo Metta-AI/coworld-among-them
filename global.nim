@@ -1,7 +1,7 @@
 import
   std/os,
   supersnappy,
-  bitworld/profile, bitworld/protocol, sim,
+  bitworld/profile, bitworld/bitstreamprotocol, sim,
   bitworld/pixelfonts,
   bitworld/server
 

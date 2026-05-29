@@ -1,6 +1,6 @@
 import
   std/strutils,
-  bitworld/protocol,
+  bitworld/bitstreamprotocol,
   sim,
   bitworld/pixelfonts,
   bitworld/server

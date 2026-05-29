@@ -3,7 +3,7 @@ import
   ../sim,
   ../texts,
   bitworld/pixelfonts,
-  bitworld/protocol,
+  bitworld/bitstreamprotocol,
   bitworld/server
 
 const

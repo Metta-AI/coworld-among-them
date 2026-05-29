@@ -16,7 +16,7 @@ when defined(modulabotLibrary):
 else:
   # CLI build: parser, runner, defaults.
   import std/[os, parseopt, strutils]
-  import bitworld/protocol
+  import bitworld/bitstreamprotocol
   import types
   import viewer/runner
 

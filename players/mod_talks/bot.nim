@@ -8,7 +8,7 @@
 
 import std/[monotimes, os, random, times]
 import pixie
-import bitworld/protocol
+import bitworld/bitstreamprotocol
 import ../../sim
 import bitworld/server
 

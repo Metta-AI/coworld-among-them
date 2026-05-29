@@ -10,7 +10,7 @@
 
 import std/strutils
 
-import bitworld/protocol
+import bitworld/bitstreamprotocol
 import ../../sim
 import ../../votereader
 import bitworld/server

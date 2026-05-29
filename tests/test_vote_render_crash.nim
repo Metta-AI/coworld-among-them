@@ -1,5 +1,5 @@
 import ../sim, ../global
-import bitworld/protocol
+import bitworld/bitstreamprotocol
 
 echo "Testing vote render crash"
 

@@ -1,7 +1,7 @@
 import
   std/[os],
   benchy,
-  bitworld/protocol,
+  bitworld/bitstreamprotocol,
   ../sim
 
 const

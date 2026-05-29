@@ -5,7 +5,7 @@ import std/[os, strformat, strutils]
 
 import ../../../sim
 import bitworld/server
-import bitworld/protocol
+import bitworld/bitstreamprotocol
 
 import ../bot
 import ../types

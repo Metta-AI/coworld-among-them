@@ -8,7 +8,7 @@
 ## read (`unpacked`, `playerSprite`) are easy to pass explicitly and
 ## exposing them as parameters makes the matchers trivially testable.
 
-import bitworld/protocol
+import bitworld/bitstreamprotocol
 import ../../sim
 import bitworld/server
 

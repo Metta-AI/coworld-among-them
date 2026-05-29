@@ -9,7 +9,7 @@
 ##   nim c -r among_them/players/lively_lecun/capture_fixtures.nim
 
 import std/[os, strformat, strutils]
-import bitworld/protocol
+import bitworld/bitstreamprotocol
 import ../../sim
 
 const

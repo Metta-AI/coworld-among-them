@@ -10,7 +10,7 @@ when not defined(modulabotLibrary):
   import std/[json, monotimes, options, os, times]
   import whisky
 
-  import bitworld/protocol
+  import bitworld/bitstreamprotocol
   import ../../../sim                  # WebSocketPath
 
   import ../types

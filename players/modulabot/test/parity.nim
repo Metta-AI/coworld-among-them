@@ -30,7 +30,7 @@
 ##     file is a flat concatenation, record count is `filesize / 16384`.
 
 import std/[parseopt, random, strformat, strutils]
-import bitworld/protocol
+import bitworld/bitstreamprotocol
 
 import ../bot
 import ../types

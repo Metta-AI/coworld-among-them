@@ -8,7 +8,7 @@
 ## because they need access to identity sub-record helpers.
 
 import std/strutils
-import bitworld/protocol
+import bitworld/bitstreamprotocol
 
 import types
 

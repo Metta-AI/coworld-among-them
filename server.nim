@@ -2,7 +2,7 @@ import
   std/[algorithm, locks, monotimes, nativesockets, os, strutils, tables, times],
   mummy,
   bitworld/client as bitworldClient, bitworld/profile, bitworld/runtime,
-  bitworld/protocol,
+  bitworld/bitstreamprotocol,
   sim, global, replays, game_log
 
 when defined(posix):

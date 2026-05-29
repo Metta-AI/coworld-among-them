@@ -1,5 +1,5 @@
 import
-  bitworld/protocol,
+  bitworld/bitstreamprotocol,
   bitworld/replays as replayCodec,
   sim
 

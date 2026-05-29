@@ -11,7 +11,7 @@
 
 import std/monotimes, std/times
 
-import bitworld/protocol
+import bitworld/bitstreamprotocol
 import ../../sim
 
 import types

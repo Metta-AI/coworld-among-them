@@ -23,7 +23,7 @@ when not defined(modulabotLibrary):
   import silky
   import windy
 
-  import bitworld/protocol
+  import bitworld/bitstreamprotocol
   import ../../../sim
 
   import ../types

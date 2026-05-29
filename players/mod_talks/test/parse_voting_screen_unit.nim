@@ -19,7 +19,7 @@ import ../types
 import ../voting
 import ../evidence  # playerColorName
 
-import bitworld/protocol  # ScreenWidth, ScreenHeight
+import bitworld/bitstreamprotocol  # ScreenWidth, ScreenHeight
 
 const
   LobbySize = 8

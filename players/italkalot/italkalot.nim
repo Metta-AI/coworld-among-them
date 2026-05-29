@@ -1,4 +1,4 @@
-import pixie, bitworld/protocol, ../../sim, ../../texts, ../../votereader,
+import pixie, bitworld/bitstreamprotocol, ../../sim, ../../texts, ../../votereader,
   bitworld/server
 when not defined(italkalotLibrary):
   import bitworld/ais/openai, whisky

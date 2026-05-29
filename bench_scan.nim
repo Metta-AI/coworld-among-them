@@ -1,7 +1,7 @@
 import
   std/[algorithm, monotimes, os, parseutils, strutils, times],
   pixie,
-  sim, bitworld/protocol, bitworld/server
+  sim, bitworld/bitstreamprotocol, bitworld/server
 
 const
   SampleWidth = ScreenWidth

@@ -1,5 +1,5 @@
 import
-  pixie, bitworld/protocol, ../sim, ../votereader, bitworld/server,
+  pixie, bitworld/bitstreamprotocol, ../sim, ../votereader, bitworld/server,
   bitworld/pixelfonts
 when not defined(evidencebotLibrary):
   import silky, whisky, windy
