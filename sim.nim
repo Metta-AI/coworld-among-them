@@ -1035,8 +1035,8 @@ proc readConfigSlots(node: JsonNode, slots: var seq[PlayerSlotConfig]) =
     if item.hasKey("name"):
       raise newException(
         AmongThemError,
-        "Config field slots[" & $i & "].name is not supported; use player_names[" &
-          $i & "] instead."
+        "Config field slots[" & $i & "].name is not supported; use players[" &
+          $i & "].name instead."
       )
     var slot: PlayerSlotConfig
     item.readConfigString("token", slot.token)
@@ -1060,31 +1060,47 @@ proc readConfigSlots(node: JsonNode, slots: var seq[PlayerSlotConfig]) =
       slot.hasColor = true
     slots.add(slot)
 
-proc readConfigPlayerNames(node: JsonNode, slots: var seq[PlayerSlotConfig]) =
+proc readConfigPlayers(node: JsonNode, slots: var seq[PlayerSlotConfig]) =
   ## Reads optional fixed player display names by slot index.
-  if not node.hasKey("player_names"):
+  if node.hasKey("player_names"):
+    raise newException(
+      AmongThemError,
+      "Config field player_names is not supported; use players[].name instead."
+    )
+  if not node.hasKey("players"):
     return
-  let items = node["player_names"]
+  let items = node["players"]
   if items.kind != JArray:
-    raise newException(AmongThemError, "Config field player_names must be an array.")
+    raise newException(AmongThemError, "Config field players must be an array.")
   if items.len > MaxPlayers:
     raise newException(
       AmongThemError,
-      "Config field player_names cannot have more than 16 entries."
+      "Config field players cannot have more than 16 entries."
     )
   if slots.len < items.len:
     slots.setLen(items.len)
   for i, item in items.elems:
-    if item.kind != JString:
+    if item.kind != JObject:
       raise newException(
         AmongThemError,
-        "Config field player_names[" & $i & "] must be a string."
+        "Config field players[" & $i & "] must be an object."
       )
-    let name = item.getStr()
+    if not item.hasKey("name"):
+      raise newException(
+        AmongThemError,
+        "Config field players[" & $i & "].name is required."
+      )
+    let nameNode = item["name"]
+    if nameNode.kind != JString:
+      raise newException(
+        AmongThemError,
+        "Config field players[" & $i & "].name must be a string."
+      )
+    let name = nameNode.getStr()
     if name.len == 0:
       raise newException(
         AmongThemError,
-        "Config field player_names[" & $i & "] must not be empty."
+        "Config field players[" & $i & "].name must not be empty."
       )
     slots[i].name = name
 
@@ -1167,7 +1183,7 @@ proc validate(config: GameConfig) =
       if slot.name.len == 0:
         raise newException(
           AmongThemError,
-          "Config field closedRoster requires player_names[" & $i & "]."
+          "Config field closedRoster requires players[" & $i & "].name."
         )
       if slot.token.len == 0:
         raise newException(
@@ -1180,7 +1196,7 @@ proc validate(config: GameConfig) =
           config.slots[i].name == config.slots[j].name:
         raise newException(
           AmongThemError,
-          "Config field player_names has duplicate name " & config.slots[i].name & "."
+          "Config field players has duplicate name " & config.slots[i].name & "."
         )
       if config.slots[i].token.len > 0 and
           config.slots[i].token == config.slots[j].token:
@@ -1243,7 +1259,7 @@ proc update*(config: var GameConfig, jsonText: string) =
   node.readConfigSlots(config.slots)
   node.readConfigBool("closedRoster", config.closedRoster)
   node.readConfigTokens(config.slots, config.closedRoster)
-  node.readConfigPlayerNames(config.slots)
+  node.readConfigPlayers(config.slots)
   config.validate()
 
 proc slotRoleText(slot: PlayerSlotConfig): string =
@@ -1265,16 +1281,16 @@ proc slotColorText(slot: PlayerSlotConfig): string =
 proc configJson*(config: GameConfig): string =
   ## Returns the complete replay JSON for a gameplay config.
   var
-    playerNames = newJArray()
+    players = newJArray()
     slots = newJArray()
     tokens = newJArray()
-    includePlayerNames = false
+    includePlayers = false
   for slot in config.slots:
     var item = newJObject()
     if slot.name.len > 0:
-      includePlayerNames = true
+      includePlayers = true
     tokens.add(%slot.token)
-    playerNames.add(%slot.name)
+    players.add(%*{"name": slot.name})
     if slot.hasRole:
       item["role"] = %slot.slotRoleText()
     if slot.hasColor:
@@ -1315,8 +1331,8 @@ proc configJson*(config: GameConfig): string =
     "tokens": tokens,
     "slots": slots
   }
-  if includePlayerNames:
-    node["player_names"] = playerNames
+  if includePlayers:
+    node["players"] = players
   $node
 
 proc ratioImposterCount*(playerCount: int): int =
