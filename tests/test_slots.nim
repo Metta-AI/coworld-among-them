@@ -30,7 +30,7 @@ const
     {"role":"crew","color":"green"},
     {"role":"crew","color":"yellow"},
     {"role":"crew","color":"lime"},
-    {"role":"crew","color":"cyan"},
+    {"role":"crew","color":"light blue"},
     {"role":"imposter","color":"pink"},
     {"role":"imposter","color":"orange"}
   ]}"""
@@ -172,7 +172,7 @@ suite "player slots":
     var missingToken = defaultGameConfig()
     missingToken.minPlayers = 1
     expect AmongThemError:
-      missingToken.update("""{"slots":[{"name":"Player1"}],"closedRoster":true}""")
+      missingToken.update("""{"player_names":["Player1"],"closedRoster":true}""")
 
   test "duplicate configured names and tokens are rejected":
     var config = defaultGameConfig()
