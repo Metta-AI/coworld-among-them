@@ -15,15 +15,24 @@ const
     "0xBADA55_5",
     "0xBADA55_6",
     "0xBADA55_7"
+  ],"player_names":[
+    "player1",
+    "player2",
+    "player3",
+    "player4",
+    "player5",
+    "player6",
+    "player7",
+    "player8"
   ],"slots":[
-    {"name":"player1","role":"crew","color":"red"},
-    {"name":"player2","role":"crew","color":"blue"},
-    {"name":"player3","role":"crew","color":"green"},
-    {"name":"player4","role":"crew","color":"yellow"},
-    {"name":"player5","role":"crew","color":"lime"},
-    {"name":"player6","role":"crew","color":"cyan"},
-    {"name":"player7","role":"imposter","color":"pink"},
-    {"name":"player8","role":"imposter","color":"orange"}
+    {"role":"crew","color":"red"},
+    {"role":"crew","color":"blue"},
+    {"role":"crew","color":"green"},
+    {"role":"crew","color":"yellow"},
+    {"role":"crew","color":"lime"},
+    {"role":"crew","color":"cyan"},
+    {"role":"imposter","color":"pink"},
+    {"role":"imposter","color":"orange"}
   ]}"""
 
 proc initAmongThemForTest(config: GameConfig): SimServer =
@@ -86,7 +95,10 @@ suite "player slots":
     let serialized = parseJson(config.configJson())
     check serialized["tokens"].len == 8
     check serialized["tokens"][6].getStr() == "0xBADA55_6"
+    check serialized["player_names"][0].getStr() == "player1"
+    check serialized["player_names"][7].getStr() == "player8"
     check serialized["slots"].len == 8
+    check not serialized["slots"][6].hasKey("name")
     check not serialized["slots"][6].hasKey("token")
     check serialized["slots"][5]["color"].getStr() == "light blue"
 
@@ -166,7 +178,9 @@ suite "player slots":
     var config = defaultGameConfig()
 
     expect AmongThemError:
-      config.update("""{"slots":[{"name":"same"},{"name":"same"}]}""")
+      config.update("""{"player_names":["same","same"]}""")
+    expect AmongThemError:
+      config.update("""{"slots":[{"name":"same"}]}""")
     expect AmongThemError:
       config.update("""{"slots":[{"token":"same"},{"token":"same"}]}""")
     expect AmongThemError:
@@ -229,9 +243,11 @@ suite "player slots":
 
     var config = defaultGameConfig()
     config.minPlayers = 2
-    config.update("""{"tokens":["crew-token","imp-token"],"slots":[
-      {"name":"crew-policy:v3","role":"crew"},
-      {"name":"imp-policy:v7","role":"imposter"}
+    config.update("""{"tokens":["crew-token","imp-token"],
+      "player_names":["crew-policy:v3","imp-policy:v7"],
+      "slots":[
+      {"role":"crew"},
+      {"role":"imposter"}
     ],"closedRoster":true}""")
     var sim = initAmongThemForTest(config)
     var writer = openReplayWriter(path, config.configJson())
@@ -270,7 +286,7 @@ suite "player slots":
 
   test "automatic slots wait behind restricted slots":
     var config = defaultGameConfig()
-    config.update("""{"slots":[{"name":"reserved","token":"secret"}]}""")
+    config.update("""{"player_names":["reserved"],"slots":[{"token":"secret"}]}""")
     var sim = initAmongThemForTest(config)
 
     expect AmongThemError:
@@ -329,9 +345,9 @@ suite "player slots":
     config.minPlayers = 2
     config.roleRevealTicks = 0
     config.tasksPerPlayer = 1
-    config.update("""{"slots":[
-      {"name":"crew","token":"crew-token","role":"crew"},
-      {"name":"imp","token":"imp-token","role":"imposter"}
+    config.update("""{"player_names":["crew","imp"],"slots":[
+      {"token":"crew-token","role":"crew"},
+      {"token":"imp-token","role":"imposter"}
     ]}""")
     var sim = initAmongThemForTest(config)
 
