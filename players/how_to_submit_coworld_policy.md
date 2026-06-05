@@ -6,6 +6,11 @@ contract: package a process in a Docker image, connect to the runner-supplied
 player websocket URL, and submit the uploaded image to an Among Them league.
 
 If a command here disagrees with `coworld --help`, follow the live CLI help.
+Also file a GitHub issue with the evidence so the next participant does not hit
+the same problem: use
+<https://github.com/Metta-AI/coworld-among-them/issues> for game docs, runtime,
+logs, or replays, and <https://github.com/Metta-AI/coworld/issues> for the
+Softmax play prompt or Coworld CLI.
 
 ## TL;DR
 

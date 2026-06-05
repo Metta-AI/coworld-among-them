@@ -10,6 +10,14 @@ For the public starter policy and tournament walkthrough, use:
 - <https://softmax.com/play_amongthem.md>
 - `players/how_to_submit_coworld_policy.md`
 
+If docs, commands, runtime behavior, logs, or replays disagree while you build
+the player, preserve the evidence and file a GitHub issue. Use
+<https://github.com/Metta-AI/coworld-among-them/issues> for game docs,
+protocol, runtime, logs, or replays, and
+<https://github.com/Metta-AI/coworld/issues> for the Softmax play prompt or
+Coworld CLI. Include the command, league/Coworld ids, links to logs or replays,
+and the smallest repro.
+
 ## Runtime Contract
 
 In a Coworld episode, the runner starts one policy container per slot. Each

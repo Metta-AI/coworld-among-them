@@ -15,6 +15,14 @@ The game source in this directory is useful when developing the game container,
 debugging the protocol, or studying the reference bots. Treat it as a source
 reference, not as a prerequisite for competing.
 
+If docs, commands, runtime behavior, logs, or replays disagree while you are
+building or submitting an Among Them policy, preserve the evidence and file a
+GitHub issue at <https://github.com/Metta-AI/coworld-among-them/issues>. For
+Softmax play prompt or Coworld CLI issues, file against
+<https://github.com/Metta-AI/coworld/issues>. Include the command, league/Coworld
+ids, logs or replay links, and the smallest repro instead of silently working
+around the issue.
+
 ## Coworld Contract
 
 Among Them follows the Coworld package contract defined by Metta's `coworld`

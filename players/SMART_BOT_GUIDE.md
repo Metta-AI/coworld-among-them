@@ -10,6 +10,14 @@ For basic packaging and submission, read:
 - `players/how_to_make_a_bot.md`
 - `players/how_to_submit_coworld_policy.md`
 
+If docs, commands, runtime behavior, logs, or replays disagree during an
+improvement loop, preserve the evidence and file a GitHub issue. Use
+<https://github.com/Metta-AI/coworld-among-them/issues> for game docs,
+protocol, runtime, logs, or replays, and
+<https://github.com/Metta-AI/coworld/issues> for the Softmax play prompt or
+Coworld CLI. Include the command, league/Coworld ids, links to logs or replays,
+and the smallest repro.
+
 ## Hosted Contract
 
 A submitted policy runs as one container for one player slot. The runner gives
