@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/Metta-AI/metta/main/packages/coworld/src/coworld/coworld_manifest_schema.json",
+  "$schema": "https://raw.githubusercontent.com/Metta-AI/coworld/main/src/coworld/coworld_manifest_schema.json",
   "game": {
     "name": "among_them",
     "version": "0.1.21",
@@ -10,7 +10,8 @@
       "image": "public.ecr.aws/s3j4p9s7/treeform/games/among-them:latest",
       "run": [
         "/bin/among_them"
-      ]
+      ],
+      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/master"
     },
     "config_schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
