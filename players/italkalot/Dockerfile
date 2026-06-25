@@ -1,7 +1,7 @@
 # Build Docker.
 FROM alpine AS build
 
-RUN apk add --no-cache build-base curl gcompat git
+RUN apk add --no-cache build-base curl gcompat git nim
 
 RUN if [ "$(apk --print-arch)" = "x86_64" ]; then \
     curl -fsSL \
@@ -16,8 +16,6 @@ https://github.com/treeform/nimby/releases/download/0.1.26/nimby-Linux-ARM64; \
   fi && \
   chmod +x /usr/local/bin/nimby && \
   nimby use 2.2.4
-
-ENV PATH="/root/.nimby/nim/bin:$PATH"
 
 WORKDIR /workspace/among_them
 COPY nimby.lock .

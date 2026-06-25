@@ -536,8 +536,8 @@
       "name": "Among Them Commissioner",
       "type": "commissioner",
       "description": "Among Them container commissioner. It schedules episodes, computes rankings, moves players between divisions, and handles initial placement.",
-      "source_url": "https://github.com/Metta-AI/commissioners/tree/fa8ac7cb2bc6fd54c5675c7993919afabebcf4ba/commissioners/ruleset_strategy_commissioner",
-      "image": "ghcr.io/metta-ai/commissioners-among-them-commissioner@sha256:833ad827ae1c64d6e8beaca86090393e86866db966b67297dfa182dac73aa340"
+      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/master/commissioner/commissioners/ruleset_strategy_commissioner",
+      "image": "coworld-among-them-commissioner:latest"
     }
   ],
   "reporter": [
@@ -546,8 +546,8 @@
       "name": "Among Them Summarizer",
       "type": "reporter",
       "description": "Reference Among Them reporter owned by James Boggs. It consumes replay/results artifacts and writes a zip with Markdown, HTML, and JSON for surfaces such as The Column.",
-      "source_url": "https://github.com/Metta-AI/reporters/tree/58d99eb224099d5aa0001a6ee29510fb8b5bda18/reporters/among_them/among_them_summarizer",
-      "image": "ghcr.io/metta-ai/among-them-summarizer:latest"
+      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/master/reporter/among_them/among_them_summarizer",
+      "image": "coworld-among-them-reporter:latest"
     }
   ],
   "grader": [
@@ -556,8 +556,8 @@
       "name": "Among Them Grader",
       "type": "grader",
       "description": "Reference Among Them grader owned by Kyle. It consumes replay/results artifacts and emits a scalar creator-interest score for ranking useful episodes.",
-      "source_url": "https://github.com/Metta-AI/graders/tree/41831abe4b651ae9379243081d219de2083e91c8/graders/among_them/among_them_grader",
-      "image": "ghcr.io/metta-ai/among-them-grader:latest"
+      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/master/grader/graders/among_them/among_them_grader",
+      "image": "coworld-among-them-grader:latest"
     }
   ],
   "diagnoser": [
@@ -566,8 +566,8 @@
       "name": "Among Them Diagnoser",
       "type": "diagnoser",
       "description": "Reference Among Them diagnoser owned by Aaron Landy. It consumes a target policy plus episode artifacts and emits policy-assay advice for the coding agent improving that policy.",
-      "source_url": "https://github.com/Metta-AI/diagnosers/tree/796baeccc30ff9e790c2b17945bf93eb9709328b/diagnosers/among_them/among_them_diagnoser",
-      "image": "ghcr.io/metta-ai/among-them-diagnoser:latest"
+      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/master/diagnoser/diagnosers/among_them/among_them_diagnoser",
+      "image": "coworld-among-them-diagnoser:latest"
     }
   ],
   "optimizer": [
@@ -587,14 +587,30 @@
       "description": "Eight-player Among Them tournament episode using the default balanced game settings.",
       "game_config": {
         "players": [
-          { "name": "Player1" },
-          { "name": "Player2" },
-          { "name": "Player3" },
-          { "name": "Player4" },
-          { "name": "Player5" },
-          { "name": "Player6" },
-          { "name": "Player7" },
-          { "name": "Player8" }
+          {
+            "name": "Player1"
+          },
+          {
+            "name": "Player2"
+          },
+          {
+            "name": "Player3"
+          },
+          {
+            "name": "Player4"
+          },
+          {
+            "name": "Player5"
+          },
+          {
+            "name": "Player6"
+          },
+          {
+            "name": "Player7"
+          },
+          {
+            "name": "Player8"
+          }
         ],
         "seed": 679961,
         "minPlayers": 8,
@@ -643,14 +659,30 @@
     ],
     "game_config": {
       "players": [
-        { "name": "Player1" },
-        { "name": "Player2" },
-        { "name": "Player3" },
-        { "name": "Player4" },
-        { "name": "Player5" },
-        { "name": "Player6" },
-        { "name": "Player7" },
-        { "name": "Player8" }
+        {
+          "name": "Player1"
+        },
+        {
+          "name": "Player2"
+        },
+        {
+          "name": "Player3"
+        },
+        {
+          "name": "Player4"
+        },
+        {
+          "name": "Player5"
+        },
+        {
+          "name": "Player6"
+        },
+        {
+          "name": "Player7"
+        },
+        {
+          "name": "Player8"
+        }
       ],
       "seed": 679961,
       "minPlayers": 8,
