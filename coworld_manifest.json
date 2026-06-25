@@ -11,7 +11,7 @@
       "run": [
         "/bin/among_them"
       ],
-      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/master"
+      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/88b612784dcbe3d22af6e10be2fa601a54272bc8"
     },
     "config_schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -379,7 +379,7 @@
           "title": "Game Source",
           "content": {
             "type": "uri",
-            "value": "https://github.com/Metta-AI/coworld-among-them/tree/master"
+            "value": "https://github.com/Metta-AI/coworld-among-them/tree/88b612784dcbe3d22af6e10be2fa601a54272bc8"
           }
         },
         {
@@ -479,7 +479,7 @@
       "name": "evidencebot_v2",
       "type": "player",
       "description": "Stronger deterministic Among Them visual player with evidence tracking and task routing.",
-      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/master/players/evidencebot_v2",
+      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/88b612784dcbe3d22af6e10be2fa601a54272bc8/players/evidencebot_v2",
       "image": "public.ecr.aws/s3j4p9s7/treeform/players/evidencebot-v2:latest",
       "run": [
         "/bin/evidencebot_v2"
@@ -490,7 +490,7 @@
       "name": "italkalot",
       "type": "player",
       "description": "LLM-guided Among Them player that talks and votes using live game observations.",
-      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/master/players/italkalot",
+      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/88b612784dcbe3d22af6e10be2fa601a54272bc8/players/italkalot",
       "image": "public.ecr.aws/s3j4p9s7/treeform/players/italkalot:latest",
       "run": [
         "/bin/italkalot"
@@ -501,7 +501,7 @@
       "name": "ivotewell",
       "type": "player",
       "description": "Deterministic Among Them player focused on voting and smoke-test episodes.",
-      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/master/players/ivotewell",
+      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/88b612784dcbe3d22af6e10be2fa601a54272bc8/players/ivotewell",
       "image": "public.ecr.aws/s3j4p9s7/treeform/players/ivotewell:latest",
       "run": [
         "/bin/ivotewell"
@@ -512,7 +512,7 @@
       "name": "lively_lecun",
       "type": "player",
       "description": "Go-based Among Them visual player inspired by the nottoodumb perception stack.",
-      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/master/players/lively_lecun",
+      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/88b612784dcbe3d22af6e10be2fa601a54272bc8/players/lively_lecun",
       "image": "public.ecr.aws/s3j4p9s7/treeform/players/lively-lecun:latest",
       "run": [
         "/bin/lively_lecun"
@@ -523,7 +523,7 @@
       "name": "nottoodumb",
       "type": "player",
       "description": "Compact deterministic baseline Among Them visual player.",
-      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/master/players/nottoodumb",
+      "source_url": "https://github.com/Metta-AI/coworld-among-them/tree/88b612784dcbe3d22af6e10be2fa601a54272bc8/players/nottoodumb",
       "image": "public.ecr.aws/s3j4p9s7/treeform/players/nottoodumb:latest",
       "run": [
         "/bin/nottoodumb"
@@ -536,7 +536,7 @@
       "name": "Among Them Commissioner",
       "type": "commissioner",
       "description": "Among Them container commissioner. It schedules episodes, computes rankings, moves players between divisions, and handles initial placement.",
-      "source_url": "https://github.com/Metta-AI/commissioners/tree/main/commissioners/among_them/among_them_commissioner",
+      "source_url": "https://github.com/Metta-AI/commissioners/tree/fa8ac7cb2bc6fd54c5675c7993919afabebcf4ba/commissioners/among_them/among_them_commissioner",
       "image": "ghcr.io/metta-ai/commissioners-among-them-commissioner@sha256:833ad827ae1c64d6e8beaca86090393e86866db966b67297dfa182dac73aa340"
     }
   ],
@@ -546,7 +546,7 @@
       "name": "Among Them Summarizer",
       "type": "reporter",
       "description": "Reference Among Them reporter owned by James Boggs. It consumes replay/results artifacts and writes a zip with Markdown, HTML, and JSON for surfaces such as The Column.",
-      "source_url": "https://github.com/Metta-AI/reporters/tree/main/reporters/among_them/among_them_summarizer",
+      "source_url": "https://github.com/Metta-AI/reporters/tree/58d99eb224099d5aa0001a6ee29510fb8b5bda18/reporters/among_them/among_them_summarizer",
       "image": "ghcr.io/metta-ai/among-them-summarizer:latest"
     }
   ],
@@ -556,7 +556,7 @@
       "name": "Among Them Grader",
       "type": "grader",
       "description": "Reference Among Them grader owned by Kyle. It consumes replay/results artifacts and emits a scalar creator-interest score for ranking useful episodes.",
-      "source_url": "https://github.com/Metta-AI/graders/tree/main/graders/among_them/among_them_grader",
+      "source_url": "https://github.com/Metta-AI/graders/tree/41831abe4b651ae9379243081d219de2083e91c8/graders/among_them/among_them_grader",
       "image": "ghcr.io/metta-ai/among-them-grader:latest"
     }
   ],
@@ -566,7 +566,7 @@
       "name": "Among Them Diagnoser",
       "type": "diagnoser",
       "description": "Reference Among Them diagnoser owned by Aaron Landy. It consumes a target policy plus episode artifacts and emits policy-assay advice for the coding agent improving that policy.",
-      "source_url": "https://github.com/Metta-AI/diagnosers/tree/main/diagnosers/among_them/among_them_diagnoser",
+      "source_url": "https://github.com/Metta-AI/diagnosers/tree/796baeccc30ff9e790c2b17945bf93eb9709328b/diagnosers/among_them/among_them_diagnoser",
       "image": "ghcr.io/metta-ai/among-them-diagnoser:latest"
     }
   ],
@@ -576,7 +576,7 @@
       "name": "Coworld Optimizer",
       "type": "optimizer",
       "description": "Game-agnostic optimizer owned by Aaron Landy. It consumes the Coworld manifest, many replay/results artifacts, reporter outputs, grader scores, and diagnoser outputs to drive local policy improvement.",
-      "source_url": "https://github.com/Metta-AI/optimizers",
+      "source_url": "https://github.com/Metta-AI/optimizers/tree/130c2348d1113244d243948fbc23cbd4e37fa479",
       "image": "ghcr.io/metta-ai/coworld-optimizer:latest"
     }
   ],
