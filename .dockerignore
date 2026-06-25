@@ -5,3 +5,7 @@ nim.cfg
 out
 tmp
 *.tmp
+commissioner
+reporter
+grader
+diagnoser
