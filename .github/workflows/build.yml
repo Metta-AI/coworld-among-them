@@ -22,8 +22,6 @@ jobs:
         run: |
           cd ..
           nimby create
-          ln -s "$GITHUB_WORKSPACE" among_them
-          nimby install "among_them/among_them.nimble"
           nimby sync "$GITHUB_WORKSPACE/nimby.lock"
       - run: nim check among_them.nim
       - run: nim r tests/tests.nim
