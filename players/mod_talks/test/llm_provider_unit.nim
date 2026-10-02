@@ -29,7 +29,7 @@ template check(label: string, cond: untyped) =
 
 proc clearLlmEnv() =
   ## Clears every env var resolveProviderKind reads.
-  for v in ["ANTHROPIC_API_KEY", "OPENAI_API_KEY",
+  for v in ["COWORLD_LLM_ENDPOINT", "COWORLD_LLM_MODEL", "ANTHROPIC_API_KEY", "OPENAI_API_KEY",
             "MODTALKS_LLM_DISABLE", "MODTALKS_PROVIDER_OPENAI",
             "MODTALKS_LLM_MODEL",
             # Bedrock-related (Sprint 6.4):
@@ -350,3 +350,13 @@ if failures > 0:
   echo "\n", failures, " failure(s)"
   quit(1)
 echo "\nall llm_provider.nim unit tests passed"
+
+block native_sidecar_precedes_local_provider:
+  clearLlmEnv()
+  putEnv("COWORLD_LLM_ENDPOINT", "http://127.0.0.1:19350")
+  putEnv("COWORLD_LLM_MODEL", "anthropic/claude-sonnet-4.6")
+  putEnv("MODTALKS_LLM_DISABLE", "1")
+  let p = newLlmProvider("bedrock", "retired-model")
+  doAssert p.enabled() and p.kind == lpkAnthropicDirect
+  doAssert p.model == "anthropic/claude-sonnet-4.6"
+  clearLlmEnv()

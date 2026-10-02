@@ -186,14 +186,19 @@ class OpenRouterProvider:
 class AnthropicProvider:
   """Direct Anthropic API via httpx."""
   def __init__(self, model: str = 'claude-haiku-4-20250414'):
-    self._model = model
-    self._api_key = os.environ.get('ANTHROPIC_API_KEY', '')
+    endpoint = os.environ.get('COWORLD_LLM_ENDPOINT', '')
+    self._model = os.environ.get('COWORLD_LLM_MODEL', 'anthropic/claude-haiku-4.5') if endpoint else model
+    self._url = endpoint.rstrip('/') + '/v1/messages' if endpoint else 'https://api.anthropic.com/v1/messages'
+    self._api_key = '' if endpoint else os.environ.get('ANTHROPIC_API_KEY', '')
 
   def complete(self, system: str, messages: list[dict], max_tokens: int = 512) -> LLMResponse:
     import httpx
     t0 = time.monotonic()
-    resp = httpx.post('https://api.anthropic.com/v1/messages',
-      headers={'x-api-key': self._api_key, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json'},
+    headers = {'anthropic-version': '2023-06-01', 'Content-Type': 'application/json'}
+    if self._api_key:
+      headers['x-api-key'] = self._api_key
+    resp = httpx.post(self._url,
+      headers=headers,
       json={'model': self._model, 'system': system, 'messages': messages, 'temperature': 0, 'max_tokens': max_tokens},
       timeout=30.0)
     latency = (time.monotonic() - t0) * 1000
@@ -229,6 +234,8 @@ _CLASSES = {
 
 
 def create_provider(spec: str):
+  if os.environ.get('COWORLD_LLM_ENDPOINT'):
+    return AnthropicProvider()
   if ':' in spec:
     provider_name, model = spec.split(':', 1)
   else:

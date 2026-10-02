@@ -164,6 +164,8 @@ proc resolveProviderKind(forceOverride: string = ""): LlmProviderKind =
   ## 6.3); empty string means "auto-detect from env vars". Valid
   ## values: "anthropic", "openai", "bedrock", "disabled".
   ## Anything else is treated as auto-detect.
+  if getEnv("COWORLD_LLM_ENDPOINT").len > 0:
+    return lpkAnthropicDirect
   if envFlag("MODTALKS_LLM_DISABLE"):
     return lpkDisabled
   case forceOverride.toLowerAscii()
@@ -223,7 +225,9 @@ proc newLlmProvider*(forceProvider: string = "";
   ## in rule-based mode rather than wedging in `lvsIdle`).
   let kind = resolveProviderKind(forceProvider)
   let model =
-    if modelOverride.len > 0: modelOverride
+    if getEnv("COWORLD_LLM_ENDPOINT").len > 0:
+      getEnv("COWORLD_LLM_MODEL", "anthropic/claude-sonnet-4.5")
+    elif modelOverride.len > 0: modelOverride
     elif getEnv("MODTALKS_LLM_MODEL").len > 0: getEnv("MODTALKS_LLM_MODEL")
     else: defaultModelFor(kind)
   let key =
@@ -462,11 +466,12 @@ proc anthropicBody(p: LlmProvider; role: BotRole; kind: LlmCallKind;
   $body
 
 proc anthropicHeaders(p: LlmProvider): HttpHeaders =
-  newHttpHeaders({
-    "x-api-key":         p.apiKey,
+  result = newHttpHeaders({
     "anthropic-version": AnthropicVersion,
-    "content-type":      "application/json"
+    "content-type": "application/json"
   })
+  if getEnv("COWORLD_LLM_ENDPOINT").len == 0:
+    result["x-api-key"] = p.apiKey
 
 proc anthropicExtractToolUse(respBody: string): tuple[json: string;
                                                        found: bool] =
@@ -743,7 +748,10 @@ proc complete*(p: LlmProvider; role: BotRole; kind: LlmCallKind;
 
   let url =
     case p.kind
-    of lpkAnthropicDirect: AnthropicMessagesUrl
+    of lpkAnthropicDirect:
+      if getEnv("COWORLD_LLM_ENDPOINT").len > 0:
+        getEnv("COWORLD_LLM_ENDPOINT").strip(chars = {'/'}) & "/v1/messages"
+      else: AnthropicMessagesUrl
     of lpkOpenAIDirect:    OpenAIChatUrl
     of lpkDisabled:        return    ## already handled above
     of lpkBedrock:         ""        ## already handled above
