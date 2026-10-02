@@ -306,3 +306,10 @@ and `players[0].name` belong to `slots[0]`.
 
 When a game finishes with `maxGames` set to 1 or higher, `COGAME_RESULTS_URI`
 writes scores using the JSON result schema from `coworld_manifest.json`.
+
+## Hosted language players
+
+Uploaded language players use `COWORLD_LLM_ENDPOINT` and native Messages requests.
+`COWORLD_LLM_MODEL` overrides their local model setting. Upload these policies
+with Coworld 0.1.56 or newer and `--use-llm`. Each platform player pod is charged
+to its own seat; local AWS and direct-provider modes remain available locally.
