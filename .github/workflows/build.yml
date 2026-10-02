@@ -29,5 +29,5 @@ jobs:
         run: |
           nim r -d:ssl players/mod_talks/test/llm_provider_unit.nim
           nim c -d:ssl -o:/tmp/among-native-probe players/mod_talks/test/native_llm_http.nim
-          python3 -m pip install 'httpx>=0.27.0'
+          python3 -m pip install 'httpx>=0.27.0' 'anthropic>=1.11.0' mettagrid numpy
           AMONG_NATIVE_PROBE=/tmp/among-native-probe python3 -m unittest discover -s bot-policies/tests -v
