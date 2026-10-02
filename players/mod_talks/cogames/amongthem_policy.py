@@ -26,7 +26,11 @@ This module is the entry point that the CoGames tournament worker imports as
        constructed successfully (Python-side gate). Otherwise every LLM
        FFI call no-ops and the bot runs as rule-based modulabot.
 
-Credential plumbing (cogames tournaments):
+Hosted Coworld policies use COWORLD_LLM_ENDPOINT and COWORLD_LLM_MODEL.
+The injected endpoint takes precedence over local provider credentials.
+Upload with `coworld upload-policy --use-llm` to enable native inference.
+
+Local credential plumbing (cogames tournaments):
     - Tournament runner injects env vars from ``cogames upload --secret-env``
       into the policy subprocess. See ``packages/cogames/POLICY_SECRETS.md``.
     - Bedrock path: set ``AWS_ACCESS_KEY_ID`` + ``AWS_SECRET_ACCESS_KEY`` +
@@ -495,6 +499,14 @@ class _AnthropicController:
             )
             return
 
+        endpoint = os.getenv("COWORLD_LLM_ENDPOINT")
+        if endpoint:
+            self._client = anthropic.Anthropic(
+                base_url=endpoint.rstrip("/"), api_key="sidecar", max_retries=0,
+            )
+            self._model = os.getenv("COWORLD_LLM_MODEL", "anthropic/claude-sonnet-4.5")
+            return
+
         aws_has_keys = bool(os.getenv("AWS_ACCESS_KEY_ID")) and bool(
             os.getenv("AWS_SECRET_ACCESS_KEY")
         )
@@ -596,7 +608,7 @@ class _AnthropicController:
         kwargs: dict[str, Any] = dict(
             model=self._model,
             max_tokens=DEFAULT_MAX_TOKENS,
-            temperature=DEFAULT_TEMPERATURE,
+            extra_body={"temperature": DEFAULT_TEMPERATURE},
             timeout=timeout_seconds,
             system=self._system_prompt(role),
             messages=[
@@ -797,6 +809,8 @@ def _build_llm_controller() -> Any:
     (which will report ``enabled=False`` if creds are missing) so the
     rest of the policy can rely on a stable interface.
     """
+    if os.getenv("COWORLD_LLM_ENDPOINT"):
+        return _AnthropicController()
     if _env_flag_enabled("MODTALKS_PROVIDER_OPENAI"):
         c = _OpenAIController()
         if c.enabled:

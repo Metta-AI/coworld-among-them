@@ -51,6 +51,22 @@ class NativeLlmTest(unittest.TestCase):
                 )
                 self.assertEqual(response.text, 'native reply')
                 self.assertEqual(response.input_tokens, 10)
+                import importlib.util
+                wrapper = Path(__file__).resolve().parents[2] / "players/mod_talks/cogames/amongthem_policy.py"
+                spec = importlib.util.spec_from_file_location("native_mod_talks", wrapper)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                with patch.dict(os.environ, {
+                    'MODTALKS_PROVIDER_OPENAI': '1',
+                    'CLAUDE_CODE_USE_BEDROCK': '1',
+                    'MODTALKS_LLM_MODEL': 'retired-model',
+                }):
+                    controller = module._build_llm_controller()
+                    self.assertTrue(controller.enabled)
+                    decision = json.loads(controller.complete(role=0, kind='hypothesis', context_json='{}'))
+                    self.assertEqual(decision['confidence'], 'low')
+                    self.assertEqual(controller._model, 'anthropic/claude-sonnet-4.6')
+
                 if 'AMONG_NATIVE_PROBE' in os.environ:
                     subprocess.run([os.environ['AMONG_NATIVE_PROBE'], endpoint], check=True)
         finally:
